@@ -1,0 +1,24 @@
+{
+  "name": "service-boilerplate",
+  "version": "1.0.0",
+  "description": "service boiler plate with testing",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha './src/**/*.test.js'"
+  },
+  "author": "alimustofa97@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "knex": "^0.20.13",
+    "mysql": "^2.18.1",
+    "@grpc/proto-loader": "^0.5.3",
+    "grpc": "^1.24.2"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "faker": "^4.1.0",
+    "mocha": "^7.1.1",
+    "sinon": "^9.0.2"
+  }
+}

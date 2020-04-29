@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+service OrderService {
+    rpc List (OrderRequestList) returns (OrderList) {}
+}
+
+message Empty {}
+
+message Order {
+    int32 id = 1;
+    string orderCode = 2;
+    int32 totalPaymentCourier = 3;
+    repeated OrderReceipt orderReceipts = 4;
+}
+
+message OrderReceipt {
+    int32 id = 1;
+    string orderReceiptCode = 2;
+    repeated OrderDetail orderDetails = 3;
+}
+
+message OrderDetail {
+    int32 id = 1;
+    string orderDetailCode = 2;
+}
+
+message OrderList {
+    repeated Order orders = 1;
+}
+
+message OrderRequestList {
+    int32 page = 1;
+    int32 size = 2;
+}
