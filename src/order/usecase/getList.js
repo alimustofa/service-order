@@ -19,6 +19,5 @@ module.exports = (repository) => async (page, size) => {
 
     await Promise.all(orders)
 
-    console.log(orders)
     return response
 }

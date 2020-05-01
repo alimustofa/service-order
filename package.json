@@ -9,11 +9,13 @@
   "author": "alimustofa97@gmail.com",
   "license": "ISC",
   "dependencies": {
+    "@grpc/proto-loader": "^0.5.3",
     "dotenv": "^8.2.0",
+    "grpc": "^1.24.2",
+    "jaeger-client": "^3.18.0",
     "knex": "^0.20.13",
     "mysql": "^2.18.1",
-    "@grpc/proto-loader": "^0.5.3",
-    "grpc": "^1.24.2"
+    "opentracing": "^0.14.4"
   },
   "devDependencies": {
     "chai": "^4.2.0",
