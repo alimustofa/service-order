@@ -7,13 +7,31 @@ service OrderService {
 message Empty {}
 
 message Order {
+    int64 id = 1;
+    string orderCode = 2;
+    int32 totalPaymentCourier = 3;
+    int32 totalQuantity = 4;
+    string checkoutDate = 5;
+    string transactionStatusLabel = 6;
+}
+
+message OrderWithOrderReceipt {
     int32 id = 1;
     string orderCode = 2;
     int32 totalPaymentCourier = 3;
     repeated OrderReceipt orderReceipts = 4;
 }
 
+message OrderList {
+    repeated Order orders = 1;
+}
+
 message OrderReceipt {
+    int32 id = 1;
+    string orderReceiptCode = 2;
+}
+
+message OrderReceiptWithOrderDetail {
     int32 id = 1;
     string orderReceiptCode = 2;
     repeated OrderDetail orderDetails = 3;
@@ -24,11 +42,10 @@ message OrderDetail {
     string orderDetailCode = 2;
 }
 
-message OrderList {
-    repeated Order orders = 1;
-}
-
+// Request
 message OrderRequestList {
-    int32 page = 1;
-    int32 size = 2;
+    int64 userId = 1;
+    string orderType = 2;
+    int32 page = 3;
+    int32 size = 4;
 }

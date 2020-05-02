@@ -1,8 +1,9 @@
 'use strict'
 
-module.exports = (repository) => async (page, size) => {
-    const response = await repository.list(page, size)
-
+module.exports = (repository) => async (userId, orderType, page, size) => {
+    const response = await repository.orderList(userId, orderType, page, size)
+    
+    /* DISABLED 
     const orders = response.map(async order => {
         order.orderReceipts = await repository.receiptList(order.id)
 
@@ -18,6 +19,7 @@ module.exports = (repository) => async (page, size) => {
     })
 
     await Promise.all(orders)
+    */
 
     return response
 }

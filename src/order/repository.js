@@ -8,8 +8,8 @@ const Repository = () => {
     const model = Model(evmDb)
 
     return {
-        list: async(page, size) => {
-            const list = model.list(page, size)
+        orderList: async(userId, orderType, page, size) => {
+            const list = model.orderList(userId, orderType, page, size)
             
             return list
         },

@@ -11,11 +11,16 @@ const Service = (repository) => {
     return {
         list: async (call, cb) => {
             const parentSpan = tracer.extract(FORMAT_HTTP_HEADERS, JSON.parse(call.metadata.get('processId')))
-            const serviceListOrderSpan = tracer.startSpan('service-list-order', { childOf: parentSpan })
+            const serviceListOrderSpan = tracer.startSpan('order-list', { childOf: parentSpan })
             
             try {
-                const { page, size } = call.request                
-                const list = await getList(page, size)
+                const { 
+                    userId, 
+                    orderType, 
+                    page, 
+                    size 
+                } = call.request
+                const list = await getList(userId, orderType, page, size)
     
                 cb(null, { orders: list })
             } catch (e) {

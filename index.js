@@ -13,12 +13,13 @@ const { initDb } = require('./utils/db')
 const orderRoutes = require('./src/order/route')
 
 const protoOpts = {
+    longs: Number,
     keepCase: true,
     defaults: true,
     oneofs: true,
     arrays: true,
 }
-const packageDefinition = protoLoader.loadSync('src/order/proto/order.proto', protoOpts);
+const packageDefinition = protoLoader.loadSync('src/order/proto/v1/order.proto', protoOpts);
 const orderProto = grpc.loadPackageDefinition(packageDefinition);
 
 const server = new grpc.Server()
