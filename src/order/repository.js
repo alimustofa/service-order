@@ -14,6 +14,12 @@ const Repository = () => {
             return list
         },
 
+        orderData: async(userId, orderCode) => {
+            const list = model.orderData(userId, orderCode)
+            
+            return list
+        },
+
         receiptList: async(orderId) => {
             const list = model.receiptList(orderId)
             

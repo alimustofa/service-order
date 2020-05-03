@@ -2,6 +2,7 @@ syntax = "proto3";
 
 service OrderService {
     rpc List (OrderRequestList) returns (OrderList) {}
+    rpc Data (OrderRequestData) returns (OrderData) {}
 }
 
 message Empty {}
@@ -16,14 +17,13 @@ message Order {
 }
 
 message OrderWithOrderReceipt {
-    int32 id = 1;
+    int64 id = 1;
     string orderCode = 2;
     int32 totalPaymentCourier = 3;
-    repeated OrderReceipt orderReceipts = 4;
-}
-
-message OrderList {
-    repeated Order orders = 1;
+    int32 totalQuantity = 4;
+    string checkoutDate = 5;
+    string transactionStatusLabel = 6;
+    repeated OrderReceiptWithOrderDetail orderReceipts = 7;
 }
 
 message OrderReceipt {
@@ -48,4 +48,18 @@ message OrderRequestList {
     string orderType = 2;
     int32 page = 3;
     int32 size = 4;
+}
+
+message OrderRequestData {
+    int64 userId = 1;
+    string orderCode = 2;
+}
+
+// Response
+message OrderList {
+    repeated Order orders = 1;
+}
+
+message OrderData {
+    OrderWithOrderReceipt order = 1;
 }

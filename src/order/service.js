@@ -1,17 +1,21 @@
 'use strict'
 
 const { Tags, FORMAT_HTTP_HEADERS } = require('opentracing')
-const getListUseCase = require('./usecase/getList') 
 const tracer = require('../../utils/tracer')
+
+// Usecase
+const getListUseCase = require('./usecase/getList') 
+const getDataUseCase = require('./usecase/getData') 
 
 const Service = (repository) => {
 
     const getList = getListUseCase(repository)
+    const getData = getDataUseCase(repository)
 
     return {
         list: async (call, cb) => {
             const parentSpan = tracer.extract(FORMAT_HTTP_HEADERS, JSON.parse(call.metadata.get('processId')))
-            const serviceListOrderSpan = tracer.startSpan('order-list', { childOf: parentSpan })
+            const methodSpan = tracer.startSpan('order-list', { childOf: parentSpan })
             
             try {
                 const { 
@@ -24,10 +28,36 @@ const Service = (repository) => {
     
                 cb(null, { orders: list })
             } catch (e) {
-                serviceListOrderSpan.setTag(Tags.ERROR, true).log({ error: e.message, req: call.request })
+                methodSpan
+                    .setTag(Tags.ERROR, true)
+                    .log({ error: e.message, req: call.request })
+                    
                 cb(e)
             } finally {
-                serviceListOrderSpan.finish()
+                methodSpan.finish()
+            }
+        },
+
+        data: async (call, cb) => {
+            const parentSpan = tracer.extract(FORMAT_HTTP_HEADERS, JSON.parse(call.metadata.get('processId')))
+            const methodSpan = tracer.startSpan('order-data', { childOf: parentSpan })
+            
+            try {
+                const { 
+                    userId,
+                    orderCode
+                } = call.request
+                const data = await getData(userId, orderCode)
+    
+                cb(null, { order: data })
+            } catch (e) {
+                methodSpan
+                    .setTag(Tags.ERROR, true)
+                    .log({ error: e.message, req: call.request })
+
+                cb(e)
+            } finally {
+                methodSpan.finish()
             }
         },
     }

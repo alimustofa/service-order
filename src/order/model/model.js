@@ -1,73 +1,13 @@
 'use strict'
 
+const { orderTypeCondition } = require('./condition')
+
 const Model = (db) => ({
     orderList: async(userId, orderType, page, size) => {
         const limit = page * size;
         const offset = limit - size;
 
-        const receivedCondition = `
-            status = 3 AND
-            processedDate IS NOT NULL AND 
-            shipmentDate IS NOT NULL AND 
-            receivedDate IS NOT NULL AND
-            isRefund = 0 AND
-            isReturn = 0
-        `
-
-        const sentCondition = `
-            status = 3 AND
-            processedDate IS NOT NULL AND 
-            shipmentDate IS NOT NULL AND
-            receivedDate IS NULL AND
-            isRefund = 0 AND
-            isReturn = 0
-        `
-
-        const processedCondition = `
-            status = 3 AND
-            processedDate IS NOT NULL AND 
-            shipmentDate IS NULL AND
-            receivedDate IS NULL AND
-            isRefund = 0 AND
-            isReturn = 0
-        `
-
-        const paidCondition = `
-            status = 3 AND
-            processedDate IS NULL AND 
-            shipmentDate IS NULL AND
-            receivedDate IS NULL AND
-            isRefund = 0 AND
-            isReturn = 0
-        `
-
-        const pendingCondition = `
-            status = 2
-        `
-
-        const refundCondition = `
-            isRefund = 1
-        `
-
-        const returnCondition = `
-            isReturn = 1
-        `
-
-        const expiredCondition = `
-            status = 99
-        `
-
-        const orderTypes = {
-            'received': receivedCondition,
-            'sent': sentCondition,
-            'processed': processedCondition,
-            'paid': paidCondition,
-            'pending': pendingCondition,
-            'return': returnCondition,
-            'refund': refundCondition,
-            'expired': expiredCondition
-        }
-
+        const orderTypes = orderTypeCondition()
         const filterByType = orderTypes[orderType] || orderTypes['paid']
 
         const q = `
@@ -78,26 +18,57 @@ const Model = (db) => ({
                 checkoutDate,
                 totalQuantity,
                 CASE
-                    WHEN ${pendingCondition} THEN 'Belum Bayar'
-                    WHEN ${receivedCondition} THEN 'Diterima'
-                    WHEN ${sentCondition} THEN 'Dikirim'
-                    WHEN ${processedCondition} THEN 'Diproses'
-                    WHEN ${paidCondition} THEN 'Dibayar'
-                    WHEN ${refundCondition} THEN 'Dibatalkan'
-                    WHEN ${returnCondition} THEN 'Dikembalikan'
-                    WHEN ${expiredCondition} THEN 'Expired'
-                    ELSE 'Dibayar'
+                    WHEN ${orderTypes.pending.condition} THEN '${orderTypes.pending.label}'
+                    WHEN ${orderTypes.received.condition} THEN '${orderTypes.received.label}'
+                    WHEN ${orderTypes.sent.condition} THEN '${orderTypes.sent.label}'
+                    WHEN ${orderTypes.processed.condition} THEN '${orderTypes.processed.label}'
+                    WHEN ${orderTypes.paid.condition} THEN '${orderTypes.paid.label}'
+                    WHEN ${orderTypes.refund.condition} THEN '${orderTypes.refund.label}'
+                    WHEN ${orderTypes.return.condition} THEN '${orderTypes.return.label}'
+                    WHEN ${orderTypes.expired.condition} THEN '${orderTypes.expired.label}'
                 END AS transactionStatusLabel
             FROM evm.order 
             WHERE 
                 userId = ? AND
-                ${filterByType}            
+                ${filterByType.condition}
+            ORDER BY paymentDate, id DESC         
             LIMIT ? OFFSET ?`
 
         let [list] = await db.raw(q, [userId, limit, offset])
         list = JSON.parse(JSON.stringify(list))
         
         return list
+    },
+
+    orderData: async(userId, orderCode) => {
+        const orderTypes = orderTypeCondition()
+
+        const q = `
+            SELECT 
+                id, 
+                orderCode, 
+                totalPaymentCourier,
+                checkoutDate,
+                totalQuantity,
+                CASE
+                    WHEN ${orderTypes.pending.condition} THEN '${orderTypes.pending.label}'
+                    WHEN ${orderTypes.received.condition} THEN '${orderTypes.received.label}'
+                    WHEN ${orderTypes.sent.condition} THEN '${orderTypes.sent.label}'
+                    WHEN ${orderTypes.processed.condition} THEN '${orderTypes.processed.label}'
+                    WHEN ${orderTypes.paid.condition} THEN '${orderTypes.paid.label}'
+                    WHEN ${orderTypes.refund.condition} THEN '${orderTypes.refund.label}'
+                    WHEN ${orderTypes.return.condition} THEN '${orderTypes.return.label}'
+                    WHEN ${orderTypes.expired.condition} THEN '${orderTypes.expired.label}'
+                END AS transactionStatusLabel
+            FROM evm.order 
+            WHERE 
+                userId = ? AND
+                orderCode = ?`
+
+        let [data] = await db.raw(q, [userId, orderCode])
+        data = JSON.parse(JSON.stringify(data))
+        
+        return data[0]
     },
 
     receiptList: async(orderId) => {
