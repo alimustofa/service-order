@@ -24,9 +24,9 @@ const Service = (repository) => {
                     page, 
                     size 
                 } = call.request
-                const list = await getList(userId, orderType, page, size)
+                const data = await getList(userId, orderType, page, size)
     
-                cb(null, { orders: list })
+                cb(null, data)
             } catch (e) {
                 methodSpan
                     .setTag(Tags.ERROR, true)
@@ -48,8 +48,8 @@ const Service = (repository) => {
                     orderCode
                 } = call.request
                 const data = await getData(userId, orderCode)
-    
-                cb(null, { order: data })
+
+                cb(null, data)
             } catch (e) {
                 methodSpan
                     .setTag(Tags.ERROR, true)

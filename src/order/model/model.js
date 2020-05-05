@@ -66,9 +66,9 @@ const Model = (db) => ({
                 orderCode = ?`
 
         let [data] = await db.raw(q, [userId, orderCode])
-        data = JSON.parse(JSON.stringify(data))
+        data = data.length ? JSON.parse(JSON.stringify(data))[0] : null
         
-        return data[0]
+        return data
     },
 
     receiptList: async(orderId) => {

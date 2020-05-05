@@ -1,8 +1,14 @@
 'use strict'
 
+const responseGen = require('../../../utils/responseGenerator')
+
 module.exports = (repository) => async (userId, orderCode) => {
     const order = await repository.orderData(userId, orderCode)
-    
+
+    if (!order) {
+        return responseGen(200, 'ORDER_NOT_FOUND', 'Order tidak ditemukan', null)
+    }
+
     order.orderReceipts = await repository.receiptList(order.id)
 
     const receipts = order.orderReceipts.map(async receipt => {
@@ -13,5 +19,5 @@ module.exports = (repository) => async (userId, orderCode) => {
 
     await Promise.all(receipts)
 
-    return order
+    return responseGen(200, null, 'Order data', order)
 }
